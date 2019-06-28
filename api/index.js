@@ -174,7 +174,7 @@ export function* getPlaceDetails(placeId) {
  //    placeId
  //  };
  // // const service = new google.maps.places.PlacesService();
- // const res = yield request({ url: `https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyATJ3hSZzqyf0ChS6MN89Dnj_wYv9rnflw&placeid=${placeId}`, method: 'get'});
+
   debugger
   return 'res'
 }
