@@ -8,8 +8,11 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import AppNavigator from './navigation/AppNavigator';
+import NavigationService from './navigation/NavigationService';
 import theme from './constants/theme'
 import { store } from './redux/store';
+
+global.FormData = global.originalFormData ? global.originalFormData : global.FormData;
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -28,7 +31,11 @@ export default function App(props) {
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <Provider store={store}>
         <ThemeProvider theme={theme}>
-          <AppNavigator />
+          <AppNavigator 
+            ref={navigatorRef => {
+              NavigationService.setTopLevelNavigator(navigatorRef);
+            }}
+          />
         </ThemeProvider>
         </Provider>
       </View>

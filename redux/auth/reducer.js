@@ -1,15 +1,27 @@
 import { 
   loginRoutine,
   signupRoutine,
+  actions,
    } from './actions';
 
 const initialState = {
-  session: null,
   loading: false,
+  error: null,
+  session: {
+    user: null,
+    token: null,
+  }
 };
 
 export default function authReducer(state = initialState, action) {
   switch (action.type) {
+    case actions.LOGOUT: 
+      return initialState;
+    case actions.SET_SESSION:
+      return {
+        ...state,
+        session: action.session
+      }
     case loginRoutine.TRIGGER:
       return {
         ...state,
@@ -18,7 +30,10 @@ export default function authReducer(state = initialState, action) {
     case loginRoutine.SUCCESS:
       return {
         ...state,
-        data: action.payload,
+        session: {
+          ...state.session,
+          token: action.payload
+        }
       };
     case loginRoutine.FAILURE:
       return {
@@ -38,7 +53,10 @@ export default function authReducer(state = initialState, action) {
     case signupRoutine.SUCCESS:
       return {
         ...state,
-        data: action.payload,
+        session: {
+          ...state.session,
+          user: action.payload,
+        }
       };
     case signupRoutine.FAILURE:
       return {

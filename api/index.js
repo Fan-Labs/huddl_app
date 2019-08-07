@@ -1,21 +1,19 @@
 import request from 'axios'
-import { setToken, getValidToken } from './utility'
+import { getSessionToken } from './tokens'
 import moment from 'moment'
-import { siteConfig } from '../config'
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3030'
 
 
 export function* makeRequest(method, data, url, headers = {}, params = {}) {
 
   const res = yield request({ url: `${BACKEND_URL}/${url}`, params, method, data, headers });
-  
-  if (res.data.accessToken) setToken(res.data.accessToken)
   return res;
 }
 
 export function* makeAuthedRequest(method, data, url, headers, params = {}) {
-  const token = getValidToken();
-  if (!token) return null;
+  const token = getSessionToken();
+  debugger
+  if (!token) throw Error('No security token in session');
   
   const requestHeaders = { ...headers, 'Authorization': `Bearer ${token}` };
   const res = yield makeRequest(method, data, url, requestHeaders, params);
@@ -23,14 +21,15 @@ export function* makeAuthedRequest(method, data, url, headers, params = {}) {
 }
 
 
-export function* signup(email, password, isMerchant=true, isAdmin=false, strategy='local') {
+export function* signup(email, password, isMerchant=false, isAdmin=false, strategy='local') {
+  debugger
   
   const res = yield makeRequest('POST', { strategy, email, password, isAdmin, isMerchant }, 'users');
-  
+  debugger
   return res;
 }
 
-export function* requestResetEmail(email, otp="") {
+export function* requestResetEmail(email) {
   const res = yield makeRequest('POST', { action: 'sendResetPwd', value: { email }}, 'authManagement');
   return res;
 }
@@ -41,7 +40,7 @@ export function* resetPassword(newPassword, token, otp="") {
   return res;
 }
 
-export function* login(email, password, token, otp="", strategy='local') {
+export function* login(email, password, strategy='local') {
   const res = yield makeRequest(
     'POST',
     { email, password, strategy },
@@ -112,75 +111,4 @@ export function* fetchBusiness(id) {
 export function* saveBusiness(business) {
   const res = yield makeAuthedRequest('POST', business, 'businesses');
   return res;
-}
-
-
-// export function* getOTPSMS(number, otp="") {
-//   const res = yield makeAuthedRequest('POST', { number }, 'v2/settings/phone');
-//   return res;
-// }
-
-
-// export function* verifyPhone(code, number) {
-//   const res = yield makeAuthedRequest('PUT', { code, number }, 'v2/settings/phone');
-//   return res;
-// }
-
-// export function* get2FACode() {
-//   const res = yield makeAuthedRequest('GET', { }, 'v2/settings/2fa');
-//   return res;
-// }
-
-// export function* submitOTP(code) {
-//   const res = yield makeAuthedRequest('POST', { code }, 'v2/settings/2fa');
-//   return res;
-// }
-
-// export function* disable2FA(password, otp="") {
-//   const res = yield makeAuthedRequest('DELETE', { password }, 'v2/settings/2fa');
-//   return res;
-// }
-
-// export function* refreshTokenAndUser() {
-//   const res = yield makeAuthedRequest('GET', { }, 'v2/auth/refresh/hard');
-//   return res;
-// }
-
-// export function* softRefreshToken() {
-//   const res = yield makeAuthedRequest('GET', { }, 'v2/auth/refresh/soft');
-//   return res;
-// }
-
-// export function* uploadDocument(file, documentType) {
-  
-//   const formData = new FormData();
-//   formData.append('document_type', documentType);
-//   formData.append('document', file);
-
-
-//   const res = yield makeAuthedRequest('POST', formData, `v2/verification/documents`, {
-//     accept: 'application/json',
-//   });
-  
-  //yield makeAuthedRequest('DELETE', {docID}, `v2/accounts/aml_documents`);
-  //yield null;
-  //const res = yield makeAuthedRequest('DELETE', {docID}, `v2/accounts/aml_documents`)
-
-  return res
-}
-
-export function* getPlaceDetails(placeId) {
- //  const request = {
- //    placeId
- //  };
- // // const service = new google.maps.places.PlacesService();
-
-  debugger
-  return 'res'
-}
-
-//HELPERS
-
-function randomNumber(min, max) {
-  return Math.random() * (max - min) + min;
 }

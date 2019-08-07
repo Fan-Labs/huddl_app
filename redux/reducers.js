@@ -1,5 +1,5 @@
 import Auth from './auth/reducer'
-//import App from './app/reducer'
+import Teams from './teams/reducer'
 import { reducer as formReducer } from 'redux-form'
 // import { persistReducer } from 'redux-persist'
 // import storage from 'redux-persist/lib/storage' 
@@ -14,6 +14,6 @@ import { reducer as formReducer } from 'redux-form'
 
 export default {
   Auth,
- // App,
+  Teams,
   form: formReducer,
 };
